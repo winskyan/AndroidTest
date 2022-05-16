@@ -1,16 +1,11 @@
 package com.ease.testeasemob
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.hyphenate.EMCallBack
 import com.hyphenate.chat.EMClient
-import com.hyphenate.chat.EMMessage
-import com.hyphenate.chat.EMOptions
-import com.hyphenate.easeui.EaseIM
-import com.hyphenate.util.EMLog
+import com.hyphenate.chat.EMConversation
 
 class MainActivity : AppCompatActivity() {
     private lateinit var easyMobProvider: EasyMobProvider
@@ -31,19 +26,17 @@ class MainActivity : AppCompatActivity() {
             easyMobProvider.sendTextMessage("user2222", "test send message from user1111")
         })
 
+        easyMobProvider.setOnMessageChangedListener("user2222") {
+            EMClient.getInstance().chatManager().loadAllConversations()
+            val conversion = EMClient.getInstance().chatManager()
+                .getConversation("user2222", EMConversation.EMConversationType.Chat)
+            val allMessages = conversion.allMessages
+            var messageContent = "";
+            for (value in allMessages) {
+                messageContent += value.body.toString()
+            }
+            runOnUiThread { tv.text = messageContent }
 
-//        EMClient.getInstance().loginWithToken("liu", "1", object : EMCallBack {
-//            override fun onSuccess() {
-//                EMLog.e("测试", "=====login success=====")
-//            }
-//
-//            override fun onError(code: Int, error: String?) {
-//                EMLog.e("测试", "=====login onError=====$error")
-//            }
-//
-//            override fun onProgress(progress: Int, status: String?) {
-//                EMLog.e("测试", "=====onProgress onProgress=====$status")
-//            }
-//        })
+        }
     }
 }
